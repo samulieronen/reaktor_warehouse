@@ -1,0 +1,31 @@
+{
+  "name": "reaktor_warehouse",
+  "version": "1.0.0",
+  "description": "pre assignment for reaktor junior summer 2021",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=dev node_modules/.bin/nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samulieronen/reaktor_warehouse.git"
+  },
+  "author": "Samuli Eronen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samulieronen/reaktor_warehouse/issues"
+  },
+  "homepage": "https://github.com/samulieronen/reaktor_warehouse#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
+    "react": "^17.0.1"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7"
+  }
+}
