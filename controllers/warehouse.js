@@ -6,36 +6,32 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/08 02:01:01 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/09 19:20:54 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const { request, response } = require('express')
 const http = require('http')
 const midware = require('../utils/middleware')
+const logger = require('../utils/log')
 const warehouseRouter = require('express').Router()
-const data = require('./data')
-
-
-const init = [ { status: 'Hang tight, fetching data!' } ]
+const data = require('../data')
 
 let availabilityData = []
+let productData = [['beanies'], ['gloves'], ['facemasks']]
 
-
-
-let productData = [['beanies', init], ['gloves', init], ['facemasks', init]]
-
-const collectData = async () => {
-	productData['beanies'] = await data.getProducts('beanies')
-	productData['gloves'] = await data.getProducts('gloves')
-	productData['facemasks'] = await data.getProducts('facemasks')
+const collectData = async (items) => {
+	let manufacturers = []
+	let index
+	let ret
+	for (index = 0; index < 3; index++) {
+			ret = await data.getProducts(items[index], manufacturers)
+							.catch(error => logger.log(error))
+			productData[items[index]] = ret[0]
+	}
 }
 
-collectData()
-
-warehouseRouter.get('/', (request, response, next) => {
-	response.redirect(301, '/warehouse')
-})
+collectData(['beanies', 'gloves', 'facemasks'])
 
 warehouseRouter.get('/warehouse', (request, response, next) => {
 	response.status(200).send('<h1>Hello World!</h1>')
