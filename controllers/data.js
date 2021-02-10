@@ -6,13 +6,13 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/08 01:35:14 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/09 19:21:22 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/10 23:30:08 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const fetch = require('node-fetch')
-const config = require('./utils/config')
-const logger = require('./utils/log')
+const config = require('../utils/config')
+const logger = require('../utils/log')
 
 const getManufacturers = async (data, list) => {
 	let index = 0
@@ -24,7 +24,6 @@ const getManufacturers = async (data, list) => {
 		}
 		index++
 	}
-	console.log(list)
 	return list
 }
 
