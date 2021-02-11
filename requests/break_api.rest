@@ -1,3 +1,2 @@
-GET https://bad-api-assignment.reaktor.com/v2/availability/ippal
+GET https://bad-api-assignment.reaktor.com/v2/availability/juuran
 Content-Type: application/json
-x-force-error-mode: all

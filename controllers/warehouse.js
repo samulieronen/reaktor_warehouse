@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/11 16:18:35 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/12 01:11:12 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,21 +41,23 @@ let productData = {
 
 let availabilityData = []
 
-let manufacturers = ['umpante', 'ippal', 'niksleh', 'abiplos', 'okkau', 'laion']
+let manufacturers = []
 
 const syncManufacturers = (products) => {
+	newManufacturers = []
 	for (item of products.gloves) {
-		if (!manufacturers.includes(item.manufacturer))
-			manufacturers.push(item.manufacturer)
+		if (!newManufacturers.includes(item.manufacturer))
+			newManufacturers.push(item.manufacturer)
 	}
 	for (item of products.beanies) {
-		if (!manufacturers.includes(item.manufacturer))
-			manufacturers.push(item.manufacturer)
+		if (!newManufacturers.includes(item.manufacturer))
+		newManufacturers.push(item.manufacturer)
 	}
 	for (item of products.facemasks) {
-		if (!manufacturers.includes(item.manufacturer))
-			manufacturers.push(item.manufacturer)
+		if (!newManufacturers.includes(item.manufacturer))
+		newManufacturers.push(item.manufacturer)
 	}
+	manufacturers = newManufacturers;
 	console.log('Manufacturers list synced!')
 }
 
@@ -63,20 +65,26 @@ const linkAvailability = (item) => {
 	let index
 	for (index = 0; index < productData.beanies.length; index++) {
 		if (productData.beanies[index].id == item.id) {
-			productData.beanies[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
-			return
+			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
+				productData.beanies[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
+				return
+			}
 		}
 	}
 	for (index = 0; index < productData.facemasks.length; index++) {
 		if (productData.facemasks[index].id == item.id) {
-			productData.facemasks[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
-			return
+			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
+				productData.facemasks[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
+				return
+			}
 		}
 	}
 	for (index = 0; index < productData.gloves.length; index++) {
 		if (productData.gloves[index].id == item.id) {
-			productData.gloves[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
-			return
+			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
+				productData.gloves[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
+				return
+			}
 		}
 	}
 }
@@ -108,11 +116,13 @@ const collectData = async () => {
 		let index = 0
 		tmpmans = [...mans]
 		for (item of tmp) {
-			let tmpData = item.response
-			if (tmpData !== '[]' && tmpData.length > 0) {
-				availabilityData = availabilityData.concat(tmpData)
-				mans.splice(mans.indexOf(tmpmans[index]), 1)
-				console.log(`Got data for ${tmpmans[index]}.`)
+			if (item) {
+				let tmpData = item.response
+				if (tmpData !== '[]' && tmpData.length > 0) {
+					availabilityData = availabilityData.concat(tmpData)
+					mans.splice(mans.indexOf(tmpmans[index]), 1)
+					console.log(`Got data for ${tmpmans[index]}.`)
+				}
 			}
 			else
 				console.log(`Invalid data for ${tmpmans[index]}!`)
@@ -134,6 +144,7 @@ collectData()
 setInterval(() => {
 	collectData()
 	.then(() => console.log('Data refreshed!'))
+	.catch(error => console.log(error))
 }, refreshRate)
 
 warehouseRouter.get('/', (request, response, next) => {
