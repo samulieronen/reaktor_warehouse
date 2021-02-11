@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/10 02:02:50 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/11 02:50:51 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,41 +17,39 @@ const logger = require('../utils/log')
 const warehouseRouter = require('express').Router()
 const dataHandler = require('./data')
 
-let productData = [['beanies'], ['gloves'], ['facemasks']]
-
-const parseData = () => {
-	
+let productData = {
+	beanies: ['Fetching data, hold tight!'],
+	gloves: ['Fetching data, hold tight!'],
+	facemasks: ['Fetching data, hold tight!']
 }
 
-const collectData = async (items) => {
-	let manufacturers = []
-	let index = 0
-	let ret = []
-	for (index = 0; index < 3; index++) {
-			ret = await dataHandler.getProducts(items[index], manufacturers)
-							.catch(error => logger.log(error))
-			productData[items[index]] = ret[0]
+let availabilityData = []
+
+let manufacturers = ['umpante', 'ippal', 'niksleh', 'abiplos', 'okkau', 'laion']
+
+const syncManufacturers = (items) => {
+	for (item of productData.gloves) {
+		if (!manufacturers.includes(item.manufacturer))
+			manufacturers.push(item.manufacturer)
 	}
-	while (manufacturers.length > 0) {
-		const temp = [...manufacturers]
-		for (index = 0; index < temp.length; index++) {
-			ret = await dataHandler.getAvailability(temp[index])
-							.catch(error => console.log(error))
-			if (!ret || !ret.response || ret.response.length < 50) {
-				console.log(`Bad data for ${temp[index]}!\nTrying again soon...`)
-			} else {
-				console.log(`Got response for ${temp[index]}`)
-				
-				const toRemove = manufacturers.indexOf(temp[index])
-				if (toRemove > -1)
-					manufacturers.splice(toRemove, 1)
-//				console.log(manufacturers)
-			}
-		}
+	for (item of productData.beanies) {
+		if (!manufacturers.includes(item.manufacturer))
+			manufacturers.push(item.manufacturer)
 	}
+	for (item of productData.facemasks) {
+		if (!manufacturers.includes(item.manufacturer))
+			manufacturers.push(item.manufacturer)
+	}
+	console.log(manufacturers)
 }
 
-collectData(['beanies', 'gloves', 'facemasks'])
+const collectData = async () => {
+	productData = await dataHandler.fetchAllProducts()
+	syncManufacturers(productData)
+	availabilityData = await dataHandler.fetchAllAvailabilities(manufacturers)
+}
+
+collectData()
 
 warehouseRouter.get('/', (request, response, next) => {
 	response.status(301).redirect('/warehouse')
@@ -62,15 +60,24 @@ warehouseRouter.get('/warehouse', (request, response, next) => {
 })
 
 warehouseRouter.get('/warehouse/beanies', (request, response, next) => {
-	response.json(productData['beanies'])
+	response.json(productData.beanies)
 })
 
 warehouseRouter.get('/warehouse/facemasks', (request, response, next) => {
-	response.json(productData['facemasks'])
+	response.json(productData.facemasks)
 })
 
 warehouseRouter.get('/warehouse/gloves', (request, response, next) => {
-	response.json(productData['gloves'])
+	response.json(productData.gloves)
+})
+
+warehouseRouter.get('/warehouse/availability', (request, response, next) => {
+	response.json(availabilityData)
+})
+
+warehouseRouter.get('/warehouse/availability/:id', (request, response, next) => {
+	const value = Number(request.params.id)
+	response.json(availabilityData[value])
 })
 
 module.exports = warehouseRouter
