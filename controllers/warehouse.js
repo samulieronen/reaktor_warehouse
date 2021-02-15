@@ -6,12 +6,11 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/12 01:11:12 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/15 14:56:31 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const { request, response } = require('express')
-const http = require('http')
 const midware = require('../utils/middleware')
 const logger = require('../utils/log')
 const warehouseRouter = require('express').Router()
@@ -23,14 +22,14 @@ const refreshRate = 330000 // 5,5mins
 
 const maxTries = 6
 
+const info = {
+	updateTime: "",
+	noAvail: []
+}
+
 const loading = {
 	code: 1,
 	message: 'Fetching data, hold tight!'
-}
-
-const invalid = {
-	code: -1,
-	message: 'No data!'
 }
 
 let productData = {
@@ -40,7 +39,6 @@ let productData = {
 }
 
 let availabilityData = []
-
 let manufacturers = []
 
 const syncManufacturers = (products) => {
@@ -58,7 +56,6 @@ const syncManufacturers = (products) => {
 		newManufacturers.push(item.manufacturer)
 	}
 	manufacturers = newManufacturers;
-	console.log('Manufacturers list synced!')
 }
 
 const linkAvailability = (item) => {
@@ -95,21 +92,22 @@ const parseAvailability = () => {
 		item.id = item.id.toLowerCase()
 		parseString(xml, (err, result) => {
 			item.DATAPAYLOAD = result
-		});
+		})
 		linkAvailability(item)
 	}
 }
 
 const collectData = async () => {
 	productData = await dataHandler.fetchAllProducts()
-	console.log('Productdata fetched!')
 	syncManufacturers(productData)
 
 	let tries = 0
 	mans = [...manufacturers]
 	while (mans.length > 0) {
 		if (tries === maxTries) {
-			console.log(`Tried ${maxTries} times with no avail.`)
+			logger.error(`Tried ${maxTries} times with no avail.`)
+			logger.error(`Could not fetch data for ${mans}`)
+			info.noAvail.concat(mans)
 			break
 		}
 		tmp = await dataHandler.fetchAllAvailabilities(mans)
@@ -121,31 +119,39 @@ const collectData = async () => {
 				if (tmpData !== '[]' && tmpData.length > 0) {
 					availabilityData = availabilityData.concat(tmpData)
 					mans.splice(mans.indexOf(tmpmans[index]), 1)
-					console.log(`Got data for ${tmpmans[index]}.`)
 				}
 			}
 			else
-				console.log(`Invalid data for ${tmpmans[index]}!`)
+				logger.log(`Invalid data for ${tmpmans[index]}!`)
 			index++
 		}
 		tries++
 	}
-	console.log('Data fetched!')
 	parseAvailability()
-	console.log('Data parsed and synced!')
 }
 
 //	Fetch preliminary data
 
 collectData()
+	.then(() => {
+		info.updateTime = new Date()
+		logger.log('Data fetched!')
+	})
+	.catch(error => logger.error(error))
+
 
 // Refresh data every $refreshRate ms
 
 setInterval(() => {
 	collectData()
-	.then(() => console.log('Data refreshed!'))
-	.catch(error => console.log(error))
+	.then(() => {
+		info.updateTime = new Date()
+		logger.log('Data refreshed!')
+	})
+	.catch(error => logger.error(error))
 }, refreshRate)
+
+
 
 warehouseRouter.get('/', (request, response, next) => {
 	response.status(301).redirect('/warehouse')
@@ -167,16 +173,8 @@ warehouseRouter.get('/warehouse/gloves', (request, response, next) => {
 	response.json(productData.gloves)
 })
 
-warehouseRouter.get('/warehouse/availability', (request, response, next) => {
-	response.json(availabilityData)
-})
-
-warehouseRouter.get('/warehouse/availability/:id', (request, response, next) => {
-	const value = Number(request.params.id)
-	if (value >= 0 && value < availabilityData.length)
-		response.json(availabilityData[value])
-	else
-		response.json(invalid)
+warehouseRouter.get('/warehouse/info', (request, response, next) => {
+	response.json(info)
 })
 
 module.exports = warehouseRouter

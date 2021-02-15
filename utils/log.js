@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 12:54:04 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/07 12:55:31 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/15 14:26:21 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ const log = (...msg) => {
 	console.log(...msg)
 }
 
-const error = () => {
+const error = (...msg) => {
 	console.error(...msg)
 }
 
