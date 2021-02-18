@@ -1,2 +1,2 @@
-GET https://bad-api-assignment.reaktor.com/v2/availability/juuran
+GET https://bad-api-assignment.reaktor.com/v2/products/beanies
 Content-Type: application/json

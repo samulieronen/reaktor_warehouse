@@ -1,0 +1,13 @@
+
+.catBtn {
+    padding: 10px 10px;
+    border-radius: 20px;
+    border-color: #000;
+    background-color: #FFF;
+    text-align: center;
+    font-size: medium;
+}
+
+.catBtn:hover {
+    background-color: #e8d612;
+}

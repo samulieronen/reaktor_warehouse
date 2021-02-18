@@ -4,6 +4,7 @@
   "description": "pre assignment for reaktor junior summer 2021",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=dev node_modules/.bin/nodemon index.js"
   },
@@ -19,6 +20,7 @@
   "homepage": "https://github.com/samulieronen/reaktor_warehouse#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "create-react-app": "^4.0.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",

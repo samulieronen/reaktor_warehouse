@@ -6,9 +6,12 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/15 14:56:31 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/19 00:06:49 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// [ 'umpante', 'juuran', 'niksleh', 'laion', 'ippal', 'abiplos' ] Feb 18, 23.53
+//
 
 const { request, response } = require('express')
 const midware = require('../utils/middleware')
@@ -42,44 +45,42 @@ let availabilityData = []
 let manufacturers = []
 
 const syncManufacturers = (products) => {
-	newManufacturers = []
+	let newManufacturers = []
+	let gloves = {}
 	for (item of products.gloves) {
 		if (!newManufacturers.includes(item.manufacturer))
 			newManufacturers.push(item.manufacturer)
+		gloves[item.id] = item
 	}
+	productData.gloves = gloves
+	
+	let beanies = {}
 	for (item of products.beanies) {
 		if (!newManufacturers.includes(item.manufacturer))
-		newManufacturers.push(item.manufacturer)
+			newManufacturers.push(item.manufacturer)
+		beanies[item.id] = item
 	}
+	productData.beanies = beanies
+
+	let facemasks = {}
 	for (item of products.facemasks) {
 		if (!newManufacturers.includes(item.manufacturer))
-		newManufacturers.push(item.manufacturer)
+			newManufacturers.push(item.manufacturer)
+		facemasks[item.id] = item
 	}
+	productData.facemasks = facemasks
+
 	manufacturers = newManufacturers;
 }
 
-const linkAvailability = (item) => {
-	let index
-	for (index = 0; index < productData.beanies.length; index++) {
-		if (productData.beanies[index].id == item.id) {
-			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
-				productData.beanies[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
-				return
-			}
-		}
-	}
-	for (index = 0; index < productData.facemasks.length; index++) {
-		if (productData.facemasks[index].id == item.id) {
-			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
-				productData.facemasks[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
-				return
-			}
-		}
-	}
-	for (index = 0; index < productData.gloves.length; index++) {
-		if (productData.gloves[index].id == item.id) {
-			if (item.DATAPAYLOAD && item.DATAPAYLOAD.AVAILABILITY) {
-				productData.gloves[index]['availability'] = item.DATAPAYLOAD.AVAILABILITY.INSTOCKVALUE[0]
+const linkAvailability = (instockvalue, id) => {
+	if (!item)
+		return
+	for (var prop in productData) {
+		if (Object.prototype.hasOwnProperty.call(productData, prop)) {
+			if (productData[prop][id]) {
+				let target = productData[prop][id]
+				target['availability'] = instockvalue
 				return
 			}
 		}
@@ -91,9 +92,11 @@ const parseAvailability = () => {
 		xml = item.DATAPAYLOAD
 		item.id = item.id.toLowerCase()
 		parseString(xml, (err, result) => {
-			item.DATAPAYLOAD = result
+			if (result.AVAILABILITY && result.AVAILABILITY.INSTOCKVALUE)
+				linkAvailability(result.AVAILABILITY.INSTOCKVALUE[0], item.id)
+			else
+			linkAvailability('NO DATA', item.id)
 		})
-		linkAvailability(item)
 	}
 }
 
@@ -103,6 +106,7 @@ const collectData = async () => {
 
 	let tries = 0
 	mans = [...manufacturers]
+	console.log(mans)
 	while (mans.length > 0) {
 		if (tries === maxTries) {
 			logger.error(`Tried ${maxTries} times with no avail.`)
@@ -154,26 +158,22 @@ setInterval(() => {
 
 
 warehouseRouter.get('/', (request, response, next) => {
-	response.status(301).redirect('/warehouse')
+	response.status(200).send('<h1>Hello World!</h1>')
 })
 
-warehouseRouter.get('/warehouse', (request, response, next) => {
-	response.status(200).send('<h1>Hello World!<br>I think the UI will be here soon!</h1>')
-})
-
-warehouseRouter.get('/warehouse/beanies', (request, response, next) => {
+warehouseRouter.get('/api/warehouse/beanies', (request, response, next) => {
 	response.json(productData.beanies)
 })
 
-warehouseRouter.get('/warehouse/facemasks', (request, response, next) => {
+warehouseRouter.get('/api/warehouse/facemasks', (request, response, next) => {
 	response.json(productData.facemasks)
 })
 
-warehouseRouter.get('/warehouse/gloves', (request, response, next) => {
+warehouseRouter.get('/api/warehouse/gloves', (request, response, next) => {
 	response.json(productData.gloves)
 })
 
-warehouseRouter.get('/warehouse/info', (request, response, next) => {
+warehouseRouter.get('/api/warehouse/info', (request, response, next) => {
 	response.json(info)
 })
 

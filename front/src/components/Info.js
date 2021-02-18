@@ -1,27 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   app.js                                             :+:      :+:    :+:   */
+/*   info.js                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/02/07 12:50:10 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/19 00:02:06 by seronen          ###   ########.fr       */
+/*   Created: 2021/02/18 13:48:37 by seronen           #+#    #+#             */
+/*   Updated: 2021/02/18 13:55:59 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-const warehouseRouter = require('./controllers/warehouse')
-const config = require('./utils/config')
-const express = require('express')
-const cors = require('cors')
-const middleware = require('./utils/middleware')
-const app = express()
+import React from 'react'
 
-app.use(cors())
-app.use(express.json())
-app.use(express.static('build'))
+const info = (props) => {
+	
+}
 
-app.use('/', warehouseRouter)
-
-
-module.exports = app
+export default info
