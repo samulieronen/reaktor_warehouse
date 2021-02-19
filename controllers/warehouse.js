@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/19 00:06:49 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/19 15:37:26 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ const collectData = async () => {
 
 collectData()
 	.then(() => {
-		info.updateTime = new Date()
+		info.updateTime = new Date().toTimeString()
 		logger.log('Data fetched!')
 	})
 	.catch(error => logger.error(error))
@@ -149,7 +149,7 @@ collectData()
 setInterval(() => {
 	collectData()
 	.then(() => {
-		info.updateTime = new Date()
+		info.updateTime = new Date().toTimeString()
 		logger.log('Data refreshed!')
 	})
 	.catch(error => logger.error(error))
