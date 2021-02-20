@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 12:50:10 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/19 00:02:06 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/20 15:10:12 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static('build'))
+app.use(express.static('api/build'))
 
 app.use('/', warehouseRouter)
 
