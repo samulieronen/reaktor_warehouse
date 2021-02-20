@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/20 14:58:31 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/20 15:02:25 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ const collectData = async (mode) => {
 	info.status = 'Fetching availability data'
 	let tries = 0
 	mans = [...manufacturers]
-	console.log(mans)
+//	console.log(mans)
 	while (mans.length > 0) {
 		if (tries === maxTries) {
 			logger.error(`Tried ${maxTries} times with no avail.`)
