@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/19 15:37:26 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/20 04:05:49 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ const refreshRate = 330000 // 5,5mins
 const maxTries = 6
 
 const info = {
-	updateTime: "",
+	updateTime: 'Unknown',
 	noAvail: []
 }
 
@@ -41,6 +41,8 @@ let productData = {
 	facemasks: loading
 }
 
+let freshData = {}
+
 let availabilityData = []
 let manufacturers = []
 
@@ -52,7 +54,7 @@ const syncManufacturers = (products) => {
 			newManufacturers.push(item.manufacturer)
 		gloves[item.id] = item
 	}
-	productData.gloves = gloves
+	freshData.gloves = gloves
 	
 	let beanies = {}
 	for (item of products.beanies) {
@@ -60,7 +62,7 @@ const syncManufacturers = (products) => {
 			newManufacturers.push(item.manufacturer)
 		beanies[item.id] = item
 	}
-	productData.beanies = beanies
+	freshData.beanies = beanies
 
 	let facemasks = {}
 	for (item of products.facemasks) {
@@ -68,7 +70,7 @@ const syncManufacturers = (products) => {
 			newManufacturers.push(item.manufacturer)
 		facemasks[item.id] = item
 	}
-	productData.facemasks = facemasks
+	freshData.facemasks = facemasks
 
 	manufacturers = newManufacturers;
 }
@@ -76,10 +78,10 @@ const syncManufacturers = (products) => {
 const linkAvailability = (instockvalue, id) => {
 	if (!item)
 		return
-	for (var prop in productData) {
-		if (Object.prototype.hasOwnProperty.call(productData, prop)) {
-			if (productData[prop][id]) {
-				let target = productData[prop][id]
+	for (var prop in freshData) {
+		if (Object.prototype.hasOwnProperty.call(freshData, prop)) {
+			if (freshData[prop][id]) {
+				let target = freshData[prop][id]
 				target['availability'] = instockvalue
 				return
 			}
@@ -100,9 +102,13 @@ const parseAvailability = () => {
 	}
 }
 
-const collectData = async () => {
-	productData = await dataHandler.fetchAllProducts()
-	syncManufacturers(productData)
+const collectData = async (mode) => {
+	freshData = await dataHandler.fetchAllProducts()
+	syncManufacturers(freshData)
+
+	if (!mode) {
+		productData = freshData
+	}
 
 	let tries = 0
 	mans = [...manufacturers]
@@ -136,9 +142,11 @@ const collectData = async () => {
 
 //	Fetch preliminary data
 
-collectData()
+collectData(0)
 	.then(() => {
 		info.updateTime = new Date().toTimeString()
+		productData = freshData
+		freshData = {}
 		logger.log('Data fetched!')
 	})
 	.catch(error => logger.error(error))
@@ -147,9 +155,11 @@ collectData()
 // Refresh data every $refreshRate ms
 
 setInterval(() => {
-	collectData()
+	collectData(1)
 	.then(() => {
 		info.updateTime = new Date().toTimeString()
+		productData = freshData
+		freshData = {}
 		logger.log('Data refreshed!')
 	})
 	.catch(error => logger.error(error))

@@ -8,8 +8,12 @@ const Styles = styled.div`
   padding: 1rem;
 
   table {
-	border-spacing: 0;
-	border: 1px solid black;
+	border-collapse: collapse;
+    margin: 0 auto;
+    font-size: 1em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 
 	tr {
 	  :last-child {
@@ -22,7 +26,7 @@ const Styles = styled.div`
 
 	th,
 	td {
-		padding: 15px;
+		padding: 10px 15px;
 		text-align: left;
 	  	border-bottom: 1px solid black;
 	  	border-right: 1px solid black;
@@ -30,7 +34,15 @@ const Styles = styled.div`
 	  :last-child {
 		border-right: 0;
 	  }
-	}`
+	}
+	}
+	tfoot {
+		td {
+			border-bottom: 0px;
+	  		border-right: 0px;
+		}
+	}
+	`
 
 function Table({ columns, data }) {
 	const {
@@ -45,18 +57,18 @@ function Table({ columns, data }) {
 		pageCount,
 		previousPage,
 		setPageSize,
-		state: { pageSize },
+		state: { pageIndex, pageSize },
 	} = useTable(
 		{
 			columns,
 			data,
-			initialState: { pageIndex: 2 },
+			initialState: { pageIndex: 0 },
 		},
 		usePagination
 	)
 
 	return (
-		<div>
+		<div className="datatable">
 			<table {...getTableProps()}>
 				<thead>
 					{headerGroups.map(headerGroup => (
@@ -78,32 +90,40 @@ function Table({ columns, data }) {
 							</tr>
 						)
 					})}
+				<tfoot>
+    				<tr>
+      					<td colSpan="10">
+							<button className="pageBtn" onClick={() => previousPage()} disabled={!canPreviousPage}>
+							{'<'}
+							</button>{' '}
+						</td>
+						<td>
+							Page {pageIndex} of {pageCount}
+						</td>
+						<td>
+							<select
+								className="pageMenu"
+								value={pageSize}
+								onChange={e => {
+									setPageSize(Number(e.target.value))
+								}}
+							>
+								{[10, 20, 30, 40, 50].map(pageSize => (
+									<option key={pageSize} value={pageSize}>
+										Show {pageSize} items
+									</option>
+								))}
+							</select>
+						</td>
+      					<td>
+							<button className="pageBtn" onClick={() => nextPage()} disabled={!canNextPage}>
+							{'>'}
+							</button>{' '}
+						</td>
+    				</tr>
+  				</tfoot>
 				</tbody>
 			</table>
-			<div className="pagination">
-				<button onClick={() => previousPage()} disabled={!canPreviousPage}>
-					{'<'}
-				</button>{' '}
-				<button onClick={() => nextPage()} disabled={!canNextPage}>
-					{'>'}
-				</button>{' '}
-				<select
-					value={pageSize}
-					onChange={e => {
-						setPageSize(Number(e.target.value))
-					}}
-				>
-					{[10, 20, 30, 40, 50].map(pageSize => (
-						<option key={pageSize} value={pageSize}>
-							Show {pageSize} items
-						</option>
-					))}
-				</select>
-				<div>
-					<h3>Pagecount: {pageCount}</h3>
-					<h3>Page size: {pageSize}</h3>
-				</div>
-			</div>
 		</div>
 	)
 }
@@ -176,11 +196,15 @@ function App() {
 	return (
 		<div>
 			<h1>Reaktor Warehouse</h1>
-			<h2 className="update">Last update: {info.updateTime}</h2>
-			<h2>Switch category</h2>
-			<button className="catBtn" onClick={() => handleCategoryClick('beanies')}>Beanies</button>
-			<button className="catBtn" onClick={() => handleCategoryClick('gloves')}>Gloves</button>
-			<button className="catBtn" onClick={() => handleCategoryClick('facemasks')}>Facemasks</button>
+			<div className="update">
+				<h2>Last update: {info.updateTime}</h2>
+			</div>
+			<div className="categories">
+				<h3>Switch category</h3>
+				<button className="catBtn" onClick={() => handleCategoryClick('beanies')}>Beanies</button>
+				<button className="catBtn" onClick={() => handleCategoryClick('gloves')}>Gloves</button>
+				<button className="catBtn" onClick={() => handleCategoryClick('facemasks')}>Facemasks</button>
+			</div>
 			<h2>Current category: {category}</h2>
 			<Styles>
 				<Table
