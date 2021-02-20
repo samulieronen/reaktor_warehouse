@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/20 15:02:25 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/20 15:35:07 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,24 +41,30 @@ const syncManufacturers = (products) => {
 	let newManufacturers = []
 	let gloves = {}
 	for (item of products.gloves) {
-		if (!newManufacturers.includes(item.manufacturer))
+		if (!newManufacturers.includes(item.manufacturer)) {
 			newManufacturers.push(item.manufacturer)
+		}
+		item.color = item.color.toString()
 		gloves[item.id] = item
 	}
 	freshData.gloves = gloves
 	
 	let beanies = {}
 	for (item of products.beanies) {
-		if (!newManufacturers.includes(item.manufacturer))
+		if (!newManufacturers.includes(item.manufacturer)) {
 			newManufacturers.push(item.manufacturer)
+		}
+		item.color = item.color.toString()
 		beanies[item.id] = item
 	}
 	freshData.beanies = beanies
 
 	let facemasks = {}
 	for (item of products.facemasks) {
-		if (!newManufacturers.includes(item.manufacturer))
+		if (!newManufacturers.includes(item.manufacturer)) {
 			newManufacturers.push(item.manufacturer)
+		}
+		item.color = item.color.toString()
 		facemasks[item.id] = item
 	}
 	freshData.facemasks = facemasks

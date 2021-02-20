@@ -98,7 +98,7 @@ function Table({ columns, data }) {
 							</button>{' '}
 						</td>
 						<td>
-							Page {pageIndex} of {pageCount}
+							Page {pageIndex + 1} of {pageCount + 1}
 						</td>
 						<td>
 							<select
