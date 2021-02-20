@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/20 04:05:49 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/20 14:58:31 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,12 @@ const refreshRate = 330000 // 5,5mins
 const maxTries = 6
 
 const info = {
+	Status: '',
 	updateTime: 'Unknown',
 	noAvail: []
 }
 
-const loading = {
-	code: 1,
-	message: 'Fetching data, hold tight!'
-}
-
-let productData = {
-	beanies: loading,
-	gloves: loading,
-	facemasks: loading
-}
-
+let productData = {}
 let freshData = {}
 
 let availabilityData = []
@@ -103,6 +94,7 @@ const parseAvailability = () => {
 }
 
 const collectData = async (mode) => {
+	info.status = 'Fetching products'
 	freshData = await dataHandler.fetchAllProducts()
 	syncManufacturers(freshData)
 
@@ -110,6 +102,7 @@ const collectData = async (mode) => {
 		productData = freshData
 	}
 
+	info.status = 'Fetching availability data'
 	let tries = 0
 	mans = [...manufacturers]
 	console.log(mans)
@@ -117,7 +110,7 @@ const collectData = async (mode) => {
 		if (tries === maxTries) {
 			logger.error(`Tried ${maxTries} times with no avail.`)
 			logger.error(`Could not fetch data for ${mans}`)
-			info.noAvail.concat(mans)
+			info.noAvail = mans
 			break
 		}
 		tmp = await dataHandler.fetchAllAvailabilities(mans)
@@ -125,18 +118,16 @@ const collectData = async (mode) => {
 		tmpmans = [...mans]
 		for (item of tmp) {
 			if (item) {
-				let tmpData = item.response
-				if (tmpData !== '[]' && tmpData.length > 0) {
-					availabilityData = availabilityData.concat(tmpData)
+				if (item.response !== '[]' && item.response.length > 0) {
+					availabilityData = availabilityData.concat(item.response)
 					mans.splice(mans.indexOf(tmpmans[index]), 1)
 				}
 			}
-			else
-				logger.log(`Invalid data for ${tmpmans[index]}!`)
 			index++
 		}
 		tries++
 	}
+	info.status = 'Parsing availability data'
 	parseAvailability()
 }
 
@@ -147,7 +138,8 @@ collectData(0)
 		info.updateTime = new Date().toTimeString()
 		productData = freshData
 		freshData = {}
-		logger.log('Data fetched!')
+		info.status = 'Data fetch successful'
+//		logger.log('Data fetched!')
 	})
 	.catch(error => logger.error(error))
 
@@ -160,7 +152,8 @@ setInterval(() => {
 		info.updateTime = new Date().toTimeString()
 		productData = freshData
 		freshData = {}
-		logger.log('Data refreshed!')
+		info.status = 'Data refresh successful'
+//		logger.log('Data refreshed!')
 	})
 	.catch(error => logger.error(error))
 }, refreshRate)

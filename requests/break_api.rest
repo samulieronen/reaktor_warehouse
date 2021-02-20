@@ -1,2 +1,9 @@
 GET https://bad-api-assignment.reaktor.com/v2/products/beanies
 Content-Type: application/json
+
+###
+
+GET https://bad-api-assignment.reaktor.com/v2/availability/abiplos
+Content-Type: application/json
+x-force-error-mode: all
+

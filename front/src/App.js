@@ -197,13 +197,14 @@ function App() {
 		<div>
 			<h1>Reaktor Warehouse</h1>
 			<div className="update">
-				<h2>Last update: {info.updateTime}</h2>
+				<h3>Last update: {info.updateTime}</h3>
+				<h3>Status: {info.status}</h3>
 			</div>
 			<div className="categories">
-				<h3>Switch category</h3>
-				<button className="catBtn" onClick={() => handleCategoryClick('beanies')}>Beanies</button>
-				<button className="catBtn" onClick={() => handleCategoryClick('gloves')}>Gloves</button>
-				<button className="catBtn" onClick={() => handleCategoryClick('facemasks')}>Facemasks</button>
+				<h2>Switch category</h2>
+				<button className="catBtn" onClick={() => handleCategoryClick('beanies')}>Beanies</button>{' '}
+				<button className="catBtn" onClick={() => handleCategoryClick('gloves')}>Gloves</button>{' '}
+				<button className="catBtn" onClick={() => handleCategoryClick('facemasks')}>Facemasks</button>{' '}
 			</div>
 			<h2>Current category: {category}</h2>
 			<Styles>
