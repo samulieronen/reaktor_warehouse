@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/22 15:21:54 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/22 15:59:01 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 //
 
 const { request, response } = require('express')
-const midware = require('../utils/middleware')
 const logger = require('../utils/log')
 const warehouseRouter = require('express').Router()
 const dataHandler = require('./data')
@@ -178,6 +177,11 @@ warehouseRouter.get('/api/warehouse/gloves', (request, response, next) => {
 
 warehouseRouter.get('/api/warehouse/info', (request, response, next) => {
 	response.json(info)
+})
+
+warehouseRouter.get('*', (request, response) => {
+    response.send({error: 'Invalid API endpoint'});
+    response.end();
 })
 
 module.exports = warehouseRouter
