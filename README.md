@@ -13,10 +13,10 @@ Availability is also color identifiable for fast interpretation.
 <br><br>
 
 ## How to run?
-´´´
+```
 $ npm install
 $ npm start
-´´´
+```
 
 ## Description
 On a cold start, product data is fetched near instantly, but availability data seems to take up to 20 seconds to fetch. Keep refreshing the page.<br>
