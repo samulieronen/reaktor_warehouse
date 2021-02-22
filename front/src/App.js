@@ -85,7 +85,10 @@ function Table({ columns, data }) {
 						return (
 							<tr {...row.getRowProps()}>
 								{row.cells.map(cell => {
-									return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+									if (cell.value === 'INSTOCK' || cell.value === 'OUTOFSTOCK' || cell.value === 'LESSTHAN10')
+										return <td className={cell.value} {...cell.getCellProps()}>{cell.render('Cell')}</td>
+									else
+										return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
 								})}
 							</tr>
 						)

@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/20 15:35:07 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/22 14:47:06 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,13 @@ const midware = require('../utils/middleware')
 const logger = require('../utils/log')
 const warehouseRouter = require('express').Router()
 const dataHandler = require('./data')
+const config = require('../utils/config')
 
 const parseString = require('xml2js').parseString
 
-const refreshRate = 330000 // 5,5mins
-
-const maxTries = 6
-
 const info = {
 	Status: '',
-	updateTime: 'Unknown',
-	noAvail: []
+	updateTime: 'Unknown'
 }
 
 let productData = {}
@@ -111,12 +107,10 @@ const collectData = async (mode) => {
 	info.status = 'Fetching availability data'
 	let tries = 0
 	mans = [...manufacturers]
-//	console.log(mans)
 	while (mans.length > 0) {
-		if (tries === maxTries) {
-			logger.error(`Tried ${maxTries} times with no avail.`)
-			logger.error(`Could not fetch data for ${mans}`)
-			info.noAvail = mans
+		if (tries === config.MAX_TRIES) {
+			logger.error(`Tried ${config.MAX_TRIES} times with no avail.`)
+			info.status = `Could not fetch availability data for: ${mans}. Trying again in ${config.REFRESH_RATE / 60000} minutes!`
 			break
 		}
 		tmp = await dataHandler.fetchAllAvailabilities(mans)
@@ -162,7 +156,7 @@ setInterval(() => {
 //		logger.log('Data refreshed!')
 	})
 	.catch(error => logger.error(error))
-}, refreshRate)
+}, config.REFRESH_RATE)
 
 
 

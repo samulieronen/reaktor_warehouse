@@ -28,6 +28,18 @@
 	margin: 0 auto;
 }
 
+.INSTOCK {
+	background-color: green;
+}
+
+.OUTOFSTOCK {
+	background-color: red;
+}
+
+.LESSTHAN10 {
+	background-color: yellow;
+}
+
 .pageMenu {
 	padding: 5px 20px;
 	border-radius: 10px;
