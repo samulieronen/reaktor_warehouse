@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 13:43:50 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/22 15:59:01 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/24 14:26:38 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,37 +33,24 @@ let availabilityData = []
 let manufacturers = []
 
 const syncManufacturers = (products) => {
+
 	let newManufacturers = []
-	let gloves = {}
-	for (item of products.gloves) {
-		if (!newManufacturers.includes(item.manufacturer)) {
-			newManufacturers.push(item.manufacturer)
+	for (var prop in products) {
+		if (Object.prototype.hasOwnProperty.call(products, prop)) {
+			let items = {}
+			for (item of products[prop])
+			{
+				if (item) {
+					if (!newManufacturers.includes(item.manufacturer)) {
+						newManufacturers.push(item.manufacturer)
+					}
+					item.color = item.color.toString()
+					items[item.id] = item
+				}
+			}
+			products[prop] = items
 		}
-		item.color = item.color.toString()
-		gloves[item.id] = item
 	}
-	freshData.gloves = gloves
-	
-	let beanies = {}
-	for (item of products.beanies) {
-		if (!newManufacturers.includes(item.manufacturer)) {
-			newManufacturers.push(item.manufacturer)
-		}
-		item.color = item.color.toString()
-		beanies[item.id] = item
-	}
-	freshData.beanies = beanies
-
-	let facemasks = {}
-	for (item of products.facemasks) {
-		if (!newManufacturers.includes(item.manufacturer)) {
-			newManufacturers.push(item.manufacturer)
-		}
-		item.color = item.color.toString()
-		facemasks[item.id] = item
-	}
-	freshData.facemasks = facemasks
-
 	manufacturers = newManufacturers;
 }
 

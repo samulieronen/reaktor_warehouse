@@ -6,7 +6,7 @@
 /*   By: seronen <seronen@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/07 12:51:55 by seronen           #+#    #+#             */
-/*   Updated: 2021/02/22 15:22:11 by seronen          ###   ########.fr       */
+/*   Updated: 2021/02/24 14:57:45 by seronen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ require('dotenv').config()
 PORT = process.env.PORT || 3001
 BASE_URL = 'https://bad-api-assignment.reaktor.com/v2/'
 FORCE_ERROR = process.env.FORCE_ERROR || 'false'
-REFRESH_RATE = Number(process.env.REFRESH_RATE) || 330000 // 5.5 mins
+REFRESH_RATE = Number(process.env.REFRESH_RATE) || 300000 // 5 mins
 MAX_TRIES = Number(process.env.MAX_TRIES) || 6
 
 if (REFRESH_RATE < 60000) {
